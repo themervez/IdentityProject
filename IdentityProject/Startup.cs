@@ -43,7 +43,7 @@ namespace IdentityProject
                 opts.Password.RequireUppercase = false;
                 opts.Password.RequireLowercase = false;
                 opts.Password.RequireDigit = false;
-            }).AddPasswordValidator<CustomPasswordValidator>().AddEntityFrameworkStores<AppIdentityDbContext>();//Password Validation ekledik
+            }).AddPasswordValidator<CustomPasswordValidator>().AddUserValidator<CustomUserValidator>().AddErrorDescriber<CustomIdentityErrorDescriber>().AddEntityFrameworkStores<AppIdentityDbContext>();//Password Validation ekledik//User Validation ekledik//IdentityErrorDescriber ekledik
             services.AddMvc(option => option.EnableEndpointRouting = false);
         }
 
