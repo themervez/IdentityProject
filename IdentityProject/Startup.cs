@@ -1,3 +1,4 @@
+using IdentityProject.CustomValidation;
 using IdentityProject.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,7 +21,7 @@ namespace IdentityProject
 
         public IConfiguration Configuration { get; }
 
-         public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
         }
@@ -31,13 +32,18 @@ namespace IdentityProject
             services.AddDbContext<AppIdentityDbContext>(opts =>
             {
                 opts.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
-        });
-            services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
+            });
+            services.AddIdentity<AppUser, AppRole>(opts =>
+            {
+                opts.User.RequireUniqueEmail = true;//1 den fazla ayný email ile kaydý önlemek için
+                opts.User.AllowedUserNameCharacters = "abcçdefgðhýijklmnoöpqrsþtuüvwxyzABCÇDEFGHIÝJKLMNOÖPQRSÞTUVWXYZ0123456789-._";//UserName alanýnda kullanýlabilecek karakterleri de burada belirleyebiliyoruz,default olarak ingilizce karakter gelmekte
 
-
-
-
-
+                opts.Password.RequiredLength = 4;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireUppercase = false;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireDigit = false;
+            }).AddPasswordValidator<CustomPasswordValidator>().AddEntityFrameworkStores<AppIdentityDbContext>();//Password Validation ekledik
             services.AddMvc(option => option.EnableEndpointRouting = false);
         }
 
